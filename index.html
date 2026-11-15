@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Демонстрационный сайт-каталог посуточной аренды загородных домов в Екатеринбурге: фильтры по датам, гостям и удобствам.">
+  <meta name="theme-color" content="#152821">
+  <title>Дома у Екатеринбурга — демо-каталог загородной аренды</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23152821'/%3E%3Cpath d='M13 33 32 15l19 18M20 29v21h24V29M27 50V36h10v14' fill='none' stroke='%23e9b872' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/manrope-cyr.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/piazzolla-cyr.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/hero.webp" as="image">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="vendor/leaflet/leaflet.js"></script>
+  <script defer src="vendor/lucide.min.js"></script>
+  <script defer src="prototype/filter-core.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#catalog">Перейти к каталогу</a>
+
+  <header class="site-header" id="top">
+    <div class="header-inner container">
+      <a class="brand" href="#top" aria-label="Дома у Екатеринбурга — наверх">
+        <span class="brand-mark"><i data-lucide="house" aria-hidden="true"></i></span>
+        <span class="brand-copy"><strong>ДОМА</strong><small>у Екатеринбурга</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="Основная навигация">
+        <a href="#catalog">Каталог</a>
+        <a href="#how">Как выбрать</a>
+        <a href="#map-section">Карта</a>
+        <button class="nav-button" type="button" data-open-leads>Заявки <span class="leads-count" data-leads-count>0</span></button>
+      </nav>
+      <a class="button button-small header-cta" href="#quick-search">Подобрать дом</a>
+      <button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+    </div>
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Мобильная навигация" hidden>
+      <a href="#catalog">Каталог</a>
+      <a href="#how">Как выбрать</a>
+      <a href="#map-section">Карта</a>
+      <a href="#quick-search">Подобрать дом</a>
+      <button class="mobile-leads-button" type="button" data-open-leads>Журнал заявок <span class="leads-count" data-leads-count>0</span></button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-inner container">
+        <div class="hero-copy">
+          <p class="demo-label"><span></span> Демонстрационный проект</p>
+          <h1 id="hero-title">Загородный дом<br><em>на ваши даты</em></h1>
+          <p class="hero-lead">Посуточная аренда домов и коттеджей у Екатеринбурга. Сравните варианты по числу гостей, удобствам и цене за сутки.</p>
+          <div class="hero-points" aria-label="Возможности каталога">
+            <span><i data-lucide="calendar-days" aria-hidden="true"></i> Фильтр по датам</span>
+            <span><i data-lucide="users" aria-hidden="true"></i> От 4 до 50 гостей</span>
+          </div>
+        </div>
+
+        <form class="quick-search" id="quick-search" novalidate>
+          <div class="form-heading">
+            <span class="form-step">Быстрый подбор</span>
+            <h2>Когда планируете поездку?</h2>
+          </div>
+          <div class="date-row">
+            <label class="field"><span>Заезд</span><input type="date" id="quick-from" name="from" required></label>
+            <label class="field"><span>Выезд</span><input type="date" id="quick-to" name="to" required></label>
+          </div>
+          <label class="field"><span>Количество гостей</span><input type="number" id="quick-guests" name="guests" min="1" max="50" value="6" inputmode="numeric" required></label>
+          <p class="form-error" id="quick-error" role="alert" hidden></p>
+          <button class="button button-primary button-wide" type="submit">Показать подходящие дома <i data-lucide="arrow-down-right" aria-hidden="true"></i></button>
+          <p class="form-note">Откроется каталог с учётом дат и гостей. Календарь занятости демонстрационный.</p>
+        </form>
+      </div>
+      <a class="scroll-cue" href="#catalog" aria-label="Перейти к каталогу домов"><span>Смотреть каталог</span><i data-lucide="arrow-down" aria-hidden="true"></i></a>
+    </section>
+
+    <section class="catalog-section" id="catalog" aria-labelledby="catalog-title">
+      <div class="container">
+        <div class="section-heading catalog-heading">
+          <div>
+            <p class="section-kicker">Каталог · 16 вымышленных домов</p>
+            <h2 id="catalog-title">Выберите дом<br>под свою компанию</h2>
+          </div>
+          <p>От тихого А-фрейма на двоих до усадьбы для большого праздника. Фото, цены и занятость приведены для демонстрации.</p>
+        </div>
+
+        <button class="filter-toggle button button-outline" id="filter-toggle" type="button" aria-expanded="false" aria-controls="filters"><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Настроить фильтры</button>
+
+        <div class="catalog-layout">
+          <aside class="filters" id="filters" aria-label="Фильтры каталога">
+            <form id="filter-form">
+              <div class="filter-top"><h3>Параметры</h3><button class="text-button" id="reset-filters" type="button">Сбросить всё</button></div>
+              <fieldset>
+                <legend>Даты поездки</legend>
+                <div class="filter-dates">
+                  <label class="field"><span>Заезд</span><input type="date" id="filter-from" name="from"></label>
+                  <label class="field"><span>Выезд</span><input type="date" id="filter-to" name="to"></label>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Гости и повод</legend>
+                <label class="check-row"><input type="checkbox" name="cat" value="s"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Домики и А-фреймы<small>до 6 гостей</small></span></label>
+                <label class="check-row"><input type="checkbox" name="cat" value="m"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Для компании<small>10–15 гостей</small></span></label>
+                <label class="check-row"><input type="checkbox" name="cat" value="l"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Корпоративы<small>до 30 гостей</small></span></label>
+                <label class="check-row"><input type="checkbox" name="cat" value="xl"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Свадьбы и юбилеи<small>до 50 гостей</small></span></label>
+                <label class="field guests-field"><span>Или точное число гостей</span><input type="number" id="filter-guests" name="guests" min="1" max="50" placeholder="Например, 12" inputmode="numeric"></label>
+              </fieldset>
+              <fieldset>
+                <legend>Удобства <small>все выбранные</small></legend>
+                <label class="check-row compact"><input type="checkbox" name="am" value="pool"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Тёплый бассейн</span></label>
+                <label class="check-row compact"><input type="checkbox" name="am" value="chan"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Банный чан</span></label>
+                <label class="check-row compact"><input type="checkbox" name="am" value="banya"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Баня или сауна</span></label>
+                <label class="check-row compact"><input type="checkbox" name="am" value="grill"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Мангальная зона</span></label>
+                <label class="check-row compact"><input type="checkbox" name="am" value="hall"><span class="check-box"><i data-lucide="check" aria-hidden="true"></i></span><span>Банкетный зал</span></label>
+              </fieldset>
+              <p class="form-error" id="filter-error" role="alert" hidden></p>
+              <button class="button button-dark button-wide apply-filters" type="submit">Применить фильтры</button>
+            </form>
+          </aside>
+
+          <div class="results-area">
+            <div class="results-toolbar">
+              <p id="results-count" aria-live="polite">Загружаем дома…</p>
+              <label class="sort-control"><span class="sr-only">Сортировка</span><select id="sort-houses"><option value="default">Сначала разные</option><option value="price-asc">Сначала дешевле</option><option value="price-desc">Сначала дороже</option><option value="guests-desc">По вместимости</option></select><i data-lucide="chevron-down" aria-hidden="true"></i></label>
+            </div>
+            <div class="house-grid" id="house-grid" aria-live="polite" aria-busy="true"></div>
+            <div class="empty-state" id="empty-state" hidden>
+              <i data-lucide="search-x" aria-hidden="true"></i>
+              <h3 id="empty-title">Под такие условия ничего не найдено</h3>
+              <p id="empty-text">Попробуйте убрать часть удобств или изменить даты.</p>
+              <div class="empty-actions">
+                <button class="button button-dark" id="empty-without-dates" type="button" hidden>Показать без дат</button>
+                <button class="button button-outline" id="empty-reset" type="button">Сбросить фильтры</button>
+              </div>
+            </div>
+            <noscript><p class="noscript-note">Для работы фильтров и карточек домов нужен JavaScript.</p></noscript>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-heading light-heading">
+          <div><p class="section-kicker">Как устроен подбор</p><h2 id="how-title">От дат до готового<br>сообщения владельцу</h2></div>
+          <p>Демо показывает путь гостя без лишних звонков. В рабочей версии сюда подключаются настоящие контакты и отправка заявки.</p>
+        </div>
+        <ol class="steps-list">
+          <li><span class="step-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span><div><h3>Сужаем выбор</h3><p>Даты, гости и нужные удобства отсекают неподходящие варианты.</p></div></li>
+          <li><span class="step-icon"><i data-lucide="images" aria-hidden="true"></i></span><div><h3>Смотрим детали</h3><p>В карточке дома — галерея, вместимость, удобства и ориентир цены.</p></div></li>
+          <li><span class="step-icon"><i data-lucide="message-square-text" aria-hidden="true"></i></span><div><h3>Готовим обращение</h3><p>Форма собирает выбранные параметры в текст. В демо его можно скопировать, но не отправить.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="map-section" id="map-section" aria-labelledby="map-title">
+      <div class="container map-layout">
+        <div class="map-copy">
+          <p class="section-kicker">География поездок</p>
+          <h2 id="map-title">Дома вокруг<br>Екатеринбурга</h2>
+          <p>Расстояние и расположение можно сравнить ещё до просмотра карточки. Для реального проекта здесь будут точные адреса или согласованные с владельцами приблизительные точки.</p>
+          <div class="map-legend"><span><i data-lucide="map-pin" aria-hidden="true"></i> 16 условных меток</span><span><i data-lucide="route" aria-hidden="true"></i> 24–65 км от центра</span></div>
+          <p class="demo-disclaimer">Все точки на карте вымышлены и не обозначают реальные объекты.</p>
+        </div>
+        <div class="map-wrap"><div id="map" role="region" aria-label="Условная карта расположения домов"></div></div>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="faq-title">
+      <div class="container faq-layout">
+        <div><p class="section-kicker">Важно знать</p><h2 id="faq-title">Честно<br>о демонстрации</h2></div>
+        <div class="faq-list">
+          <details><summary>Это настоящие дома и цены?<i data-lucide="plus" aria-hidden="true"></i></summary><p>Нет. Названия, дома, цены, расположение и изображения созданы для демонстрационного проекта. Это не клиентская работа и не действующий сервис аренды.</p></details>
+          <details><summary>Можно ли забронировать дом?<i data-lucide="plus" aria-hidden="true"></i></summary><p>Нет. Сайт не проводит оплату и не бронирует даты. Форма лишь показывает, какое обращение может получить владелец в рабочей версии.</p></details>
+          <details><summary>Как работает проверка свободных дат?<i data-lucide="plus" aria-hidden="true"></i></summary><p>Для каждого вымышленного дома задан тестовый календарь. Если выбранный период пересекается с занятыми ночами, дом скрывается из результатов.</p></details>
+          <details><summary>Что нужно для реального запуска?<i data-lucide="plus" aria-hidden="true"></i></summary><p>Настоящие данные и фотографии домов, контакты владельца, источник занятости и выбранный канал приёма заявок.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta" aria-labelledby="final-title">
+      <div class="container final-inner">
+        <div><p class="section-kicker">Начать с параметров</p><h2 id="final-title">Какой дом подойдёт<br>именно вам?</h2></div>
+        <a class="button button-primary" href="#quick-search">Подобрать дом <i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <a class="brand footer-brand" href="#top"><span class="brand-mark"><i data-lucide="house" aria-hidden="true"></i></span><span class="brand-copy"><strong>ДОМА</strong><small>у Екатеринбурга</small></span></a>
+      <p>Демонстрационный проект сайта-каталога.<br>Все дома, фотографии, цены и занятость вымышлены.</p>
+      <a class="text-link" href="#top">Наверх <i data-lucide="arrow-up" aria-hidden="true"></i></a>
+    </div>
+  </footer>
+
+  <dialog class="house-dialog" id="house-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-shell">
+      <button class="icon-button dialog-close" id="dialog-close" type="button" aria-label="Закрыть карточку дома"><i data-lucide="x" aria-hidden="true"></i></button>
+      <div class="dialog-gallery">
+        <img id="dialog-image" src="assets/hero.webp" alt="" width="900" height="506">
+        <span class="generated-label">Сгенерированное демо-фото</span>
+        <div class="gallery-controls">
+          <button class="icon-button" id="gallery-prev" type="button" aria-label="Предыдущее фото"><i data-lucide="arrow-left" aria-hidden="true"></i></button>
+          <span id="gallery-count">1 / 3</span>
+          <button class="icon-button" id="gallery-next" type="button" aria-label="Следующее фото"><i data-lucide="arrow-right" aria-hidden="true"></i></button>
+        </div>
+      </div>
+      <div class="dialog-content">
+        <p class="dialog-meta" id="dialog-meta"></p>
+        <h2 id="dialog-title"></h2>
+        <p class="dialog-price" id="dialog-price"></p>
+        <div class="dialog-amenities" id="dialog-amenities"></div>
+        <form id="request-form" novalidate>
+          <h3>Подготовить обращение</h3>
+          <p class="request-intro">Заполните данные — сайт сохранит заявку в журнале и соберёт текст обращения.</p>
+          <div class="request-grid">
+            <label class="field"><span>Ваше имя</span><input type="text" id="request-name" autocomplete="name" required maxlength="60" placeholder="Как к вам обращаться"></label>
+            <label class="field"><span>Телефон</span><input type="tel" id="request-phone" autocomplete="tel" required maxlength="24" placeholder="+7 900 000-00-00"></label>
+            <label class="field"><span>Заезд</span><input type="date" id="request-from" required></label>
+            <label class="field"><span>Выезд</span><input type="date" id="request-to" required></label>
+          </div>
+          <label class="field"><span>Гостей</span><input type="number" id="request-guests" min="1" max="50" required inputmode="numeric"></label>
+          <p class="form-error" id="request-error" role="alert" hidden></p>
+          <button class="button button-dark button-wide" type="submit">Сохранить заявку <i data-lucide="file-text" aria-hidden="true"></i></button>
+          <p class="form-note">Сохранение только в этом браузере. Наружу ничего не отправляется.</p>
+        </form>
+        <div class="request-result" id="request-result" hidden>
+          <span class="result-icon"><i data-lucide="check" aria-hidden="true"></i></span>
+          <h3>Заявка сохранена в журнале</h3>
+          <p>Можно скопировать текст или открыть журнал и выгрузить все записи в Excel.</p>
+          <textarea id="request-text" readonly rows="7" aria-label="Готовый текст обращения"></textarea>
+          <div class="result-actions"><button class="button button-dark" id="copy-request" type="button"><i data-lucide="copy" aria-hidden="true"></i> Скопировать текст</button><button class="text-button" type="button" data-open-leads>Открыть журнал</button><button class="text-button" id="edit-request" type="button">Изменить данные</button></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="leads-dialog" id="leads-dialog" aria-labelledby="leads-title">
+    <div class="leads-shell">
+      <button class="icon-button leads-close" id="leads-close" type="button" aria-label="Закрыть журнал заявок"><i data-lucide="x" aria-hidden="true"></i></button>
+      <p class="section-kicker">Демонстрация приёма заявок</p>
+      <h2 id="leads-title">Журнал заявок</h2>
+      <p class="leads-intro">Здесь сохраняются выбранный дом, даты, гости, контакты и удобства. Данные хранятся только в этом браузере и исчезнут при очистке его данных.</p>
+      <div class="leads-toolbar">
+        <p id="leads-total" aria-live="polite">Заявок пока нет</p>
+        <div class="leads-actions">
+          <button class="button button-dark" id="export-leads" type="button" disabled><i data-lucide="download" aria-hidden="true"></i> Скачать CSV для Excel</button>
+          <button class="text-button danger-button" id="clear-leads" type="button" disabled>Очистить журнал</button>
+        </div>
+      </div>
+      <div class="leads-table-wrap" id="leads-table-wrap" hidden>
+        <table class="leads-table">
+          <thead><tr><th>Создана</th><th>Дом</th><th>Заезд</th><th>Выезд</th><th>Гости</th><th>Имя</th><th>Телефон</th><th>Удобства</th></tr></thead>
+          <tbody id="leads-body"></tbody>
+        </table>
+      </div>
+      <div class="leads-empty" id="leads-empty"><i data-lucide="inbox" aria-hidden="true"></i><h3>Заявок пока нет</h3><p>Заполните форму в карточке любого дома — запись появится здесь.</p></div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" popover="manual" hidden>Текст скопирован</div>
+</body>
+</html>
